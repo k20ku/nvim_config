@@ -9,9 +9,5 @@
     },
     "workspace": {
         "checkThirdParty": false,
-        "library": [
-            "/opt/nvim/share/nvim/runtime/lua",
-            "${3rd}/luv/library"
-        ]
     }
 }

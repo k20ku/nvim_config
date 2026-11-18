@@ -13,7 +13,7 @@ map("n", "<A-h>", "^", { desc = "Go to start of line", silent = true })
 map("n", "<A-l>", "$", { desc = "Go to end of line", silent = true })
 
 map("n", "<leader>o", "m`o<esc>``", { desc = "Insert empty line below", noremap = true })
-map("n", "<leader>O", "m`O<esc>``", { desc = "Insert empty line aboce", noremap = true })
+map("n", "<leader>O", "m`O<esc>``", { desc = "Insert empty line above", noremap = true })
 
 -- Open Exploerer
 map("n", "<A-e>", ":Ex<CR>", opts)
@@ -29,10 +29,6 @@ map("n", "<leader>`", "<cmd>e #<cr>", { desc = "Switch to Other Buffer" })
 -- Commenting (add comment above/below current line)
 map("n", "gco", "o<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Comment Below" })
 map("n", "gcO", "O<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Comment Above" })
-
-map("n", "<leader>n",
-  function()
-    opt.relativenumber = not opt.relativenumber:get()
-  end,
-  { desc = "Toggle relative line numbers" }
-)
+map("n", "<leader>n", function()
+  opt.relativenumber = not opt.relativenumber:get()
+end, { desc = "Toggle relative line numbers" })

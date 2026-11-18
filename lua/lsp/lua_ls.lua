@@ -64,6 +64,39 @@
 --- * [Lua.workspace.library](https://luals.github.io/wiki/settings/#workspacelibrary)
 ---
 
+---@param names string[]
+---@return string[]
+local function get_plugin_paths(names)
+  local ok, lazy_config = pcall(require, "lazy.core.config")
+  if not ok then
+    vim.notify("lazy.core.config cannot be loaded")
+    return {}
+  end
+
+  local plugins = lazy_config.plugins
+  local paths = {}
+  for _, name in ipairs(names) do
+    if plugins[name] then
+      table.insert(paths, plugins[name].dir .. "/lua")
+    else
+      vim.notify("Invalid plugin name: " .. name)
+    end
+    return paths
+  end
+end
+
+---@param plugins string[]
+---@return string[]
+local function library(plugins)
+  local paths = get_plugin_paths(plugins)
+  -- "/lua" is added since runtime.pathStrict is true
+  -- to prevent fazzy search.
+  -- path-to user-setting file
+  table.insert(paths, vim.fn.stdpath("config") .. "/lua")
+  table.insert(paths, vim.env.VIMRUNTIME .. "/lua")
+  return paths
+end
+
 ---@type vim.lsp.Config
 return {
   cmd = { "lua-language-server" },
@@ -75,19 +108,21 @@ return {
   },
   settings = {
     Lua = {
-      runtime = { version = "LuaJIT" }, -- Neovim uses LuaJIT
+      runtime = {
+        version = "LuaJIT",
+        pathStrict = true,
+        path = { "?.lua", "?/init.lua" },
+      }, -- Neovim uses LuaJIT
       diagnostics = {
         globals = { "vim" },
         disable = { "missing-fields" }
       }, -- Recognize 'vim' global
       workspace = {
         checkThirdParty = false,
-        library = vim.list_extend(
-          vim.api.nvim_get_runtime_file('', true),
-          {
-            "${3rd}/luv/library",
-            "${3rd}/busted/library",
-          })
+        library = library({
+          "${3rd}/luv/library",
+          "${3rd}/busted/library",
+        })
       },
       completion = {
         callSnippet = "Replace",
