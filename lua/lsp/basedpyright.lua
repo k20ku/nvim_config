@@ -40,6 +40,7 @@ return {
   ---@type lspconfig.settings.basedpyright
   settings = {
     basedpyright = {
+      disableOrganizeImports = true,
       analysis = {
         autoSearchPaths = true,
         diagnosticMode = 'openFilesOnly',
@@ -47,30 +48,21 @@ return {
         -- Explicitly setting `basedpyright.analysis.useLibraryCodeForTypes` is **discouraged** by the official docs.
         -- Because it will override per-project configurations like `pyproject.toml`.
         -- If left unset, its default value is `true`, and it can be correctly overridden by project config files.
+        diagnosticSeverityOverrides = {
+          reportUnusedImport = "none",
+          reportUnusedVariable = "none",
+        },
       },
       disableTaggedHints = false,
     },
   },
   on_attach = function(client, bufnr)
-    vim.api.nvim_buf_create_user_command(bufnr, 'LspPyrightOrganizeImports', function()
-      local params = {
-        command = 'basedpyright.organizeimports',
-        arguments = { vim.uri_from_bufnr(bufnr) },
-      }
-
-      -- Using client.request() directly because "basedpyright.organizeimports" is private
-      -- (not advertised via capabilities), which client:exec_cmd() refuses to call.
-      -- https://github.com/neovim/neovim/blob/c333d64663d3b6e0dd9aa440e433d346af4a3d81/runtime/lua/vim/lsp/client.lua#L1024-L1030
-      ---@diagnostic disable-next-line: param-type-mismatch
-      client.request('workspace/executeCommand', params, nil, bufnr)
-    end, {
-      desc = 'Organize Imports',
-    })
-
+    client.server_capabilities.hoverProvider = true
     vim.api.nvim_buf_create_user_command(bufnr, 'LspPyrightSetPythonPath', set_python_path, {
       desc = 'Reconfigure basedpyright with the provided python path',
       nargs = 1,
       complete = 'file',
     })
+    print("basedpyright attached")
   end,
 }

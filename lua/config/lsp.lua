@@ -14,6 +14,7 @@ local servers = {
   "gopls",
   "ocamllsp",
   "basedpyright",
+  "ruff",
 }
 -- Enable LSP servers for Neovim 0.11+
 
